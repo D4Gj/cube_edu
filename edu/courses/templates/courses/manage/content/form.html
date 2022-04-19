@@ -1,27 +1,94 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}
-  {% if object %}
-    Изменение контента "{{ object.title }}"
-  {% else %}
-    Добавить контент
-  {% endif %}
+    {% if object %}
+        Изменение контента "{{ object.title }}"
+    {% else %}
+        Добавить контент
+    {% endif %}
 {% endblock %}
 
 {% block content %}
-  <h1>
-    {% if object %}
-      Изменить контент "{{ object.title }}"
-    {% else %}
-      Добавить контент
-    {% endif %}
-  </h1>
-  <div class="module">
-    <h2>О курсе</h2>
-    <form method="post" enctype="multipart/form-data">
-      {{ form.as_p }}
-      {% csrf_token %}
-      <p><input type="submit" value="Сохранить контент"></p>
-    </form>
-  </div>
+    <h1>
+        {% if object %}
+            Изменить контент "{{ object.title }}"
+        {% else %}
+            Добавить контент
+        {% endif %}
+    </h1>
+    <div class="module">
+        <form method="post" enctype="multipart/form-data">
+            {% if form.code %}
+                <!--setting height is important-->
+                <style>
+                    .editor, .output {
+                        height: 20em;
+                    }
+                </style>
+                Код:
+                <div style="display: flex; flex-wrap: wrap;" id="code_block1">
+                    <!--editor container: setting width to is important-->
+
+                    <div style="width: 33%;">
+
+                        <div class="editor" id="input1">{{ form.code }}</div>
+                    </div>
+                    <!--output container: setting width to is important-->
+                    <div style="width: 33%;">
+                        <div class="output" id="output1"></div>
+                    </div>
+                    <!--button group-->
+                    <div>
+                        <button
+                                type="button"
+                                class="run_button"
+                                onclick="runit($('#input1')[0], $('#output1')[0])"
+                        >
+                            Run code
+                        </button>
+                        <button
+                                type="button"
+                                class="stop-button"
+                                onclick="stopit()"
+                                style="display: none;"
+                        >
+                            Stop code
+                        </button>
+                    </div>
+
+                </div>
+
+                <div style="width: 66%">
+                    <label for="__v01d_input_area1">Входные данные:</label><div class="input_data" style="height: 10em;width: 66%;" id="__v01d_input_area1">{{ form.input_data }}</div>
+                </div>
+                <div class="hidden">{{ form.as_p }}</div>
+                <script>
+                function save() {
+                 document.getElementById("id_code").value = ace.edit("input1").getValue();
+                 document.getElementById("id_input_data").value = ace.edit("__v01d_input_area1").getValue();
+                }
+                </script>
+            {% else %}
+                {{ form.as_p }}
+            {% endif %}
+            {% csrf_token %}
+            <p><input type="submit" value="Сохранить контент" onclick="save()"></p>
+        </form>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!--ace-->
+    <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"
+            integrity="sha512-GZ1RIgZaSc8rnco/8CXfRdCpDxRCphenIiZ2ztLy3XQfCbQUSCuk8IudvNHxkRA3oUg6q0qejgN/qqyG1duv5Q=="
+            crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ext-language_tools.min.js"
+            integrity="sha512-8qx1DL/2Wsrrij2TWX5UzvEaYOFVndR7BogdpOyF4ocMfnfkw28qt8ULkXD9Tef0bLvh3TpnSAljDC7uyniEuQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!--skulpt-->
+    <script src="{% static "js/Skulpt/skulpt.min.js" %}"></script>
+    <script src="{% static "js/Skulpt/skulpt-stdlib.js" %}"></script>
+    <script src="{% static "js/skulpt-compiler.js" %}"></script>
+
+
 {% endblock %}

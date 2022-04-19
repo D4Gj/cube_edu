@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Создать задачу
+{% endblock %}
+
+{% block content %}
+    <h1>Создать задачу</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="tests" id='tests'>
+            <label for="in1">Ввод 1</label><textarea name="in1" id="in1"></textarea>
+            <label for="out1">Ввод 1</label><textarea name="out1" id="out1"></textarea>
+        </div>
+        <p><input type="submit" value="Сохранить курс"></p>
+    </form>
+{% endblock %}
+
+{% block domready %}
+
+{% endblock %}

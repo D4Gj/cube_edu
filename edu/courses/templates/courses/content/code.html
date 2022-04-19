@@ -1,0 +1,48 @@
+{% load static %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+
+<!--setting height is important-->
+<style>
+    .editor, .output {
+        height: 20em;
+    }
+</style>{{ item.id }}
+Input
+<div style="display: flex; flex-wrap: wrap;" id="code_block{{ item.id }}">
+    <!--editor container: setting width to is important-->
+    <div style="width: 33%;">
+        <div class="editor" id="code_editor{{ item.id }}">{{ item.code }}</div>
+
+    </div>
+    <!--output container: setting width to is important-->
+    <div style="width: 33%;">
+        <div class="output"></div>
+    </div>
+
+
+    <!--button group-->
+    <div>
+        <button
+                type="button"
+                class="run_button"
+                onclick="runit($($(this).parent().siblings()[0]).children()[0], $($(this).parent().siblings()[1]).children()[0])"
+        >
+            Run code
+        </button>
+        <button
+                type="button"
+                class="stop-button"
+                onclick="stopit()"
+                style="display: none;"
+        >
+            Stop code
+        </button>
+    </div>
+
+</div>
+<div style="width: 66%">
+    <label for="__v01d_input_area{{ item.id }}">Входные данные:</label>
+    <div class="input_data" style="height: 10em;width: 66%;" id="__v01d_input_area{{ item.id }}">{% if item.input_data is none %}{% else %}{{ item.input_data }}{% endif %}</div>
+</div>
+

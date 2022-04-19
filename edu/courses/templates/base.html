@@ -2,35 +2,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <title>{% block title %}Cube-educational{% endblock %}</title>
-  <link href="{% static "css/base.css" %}" rel="stylesheet">
+    <meta charset="utf-8"/>
+    <title>{% block title %}Cube-educational{% endblock %}</title>
+    <link href="{% static "css/base.css" %}" rel="stylesheet">
 </head>
 <body>
-  <div id="header">
+<div id="header">
     <a href="/" class="logo">Cube-edu</a>
     <ul class="menu">
 
-      {% if request.user.is_authenticated %}
-        <li><a href="{% url "manage_course_list" %}">Менеджер курсов</a> <a href="{% url "logout" %}">Выйти</a></li>
-      {% else %}
-        <li><a href="{% url "student_registration" %}">Регистрация</a> <a href="{% url "login" %}">Войти</a></li>
-      {% endif %}
+        {% if request.user.is_authenticated %}
+            <li><a href="{% url "student_course_list" %}">Мои курсы</a> <a href="{% url "list_problems" %}">Список
+                задач</a>
+                {% ifequal user.groups.all.0.name 'Преподаватель' %}
+                    <a href="{% url "manage_course_list" %}">Менеджер курсов</a>
+                {% endifequal %}
+                <a href="{% url "logout" %}">Выйти</a></li>
+        {% else %}
+            <li><a href="{% url "student_registration" %}">Регистрация</a> <a href="{% url "login" %}">Войти</a></li>
+        {% endif %}
     </ul>
 
-  </div>
-  <div id="content">
+</div>
+<div id="content">
     {% block content %}
     {% endblock %}
-  </div>
+</div>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-  <script>
-    $(document).ready(function() {
-      {% block domready %}
-      {% endblock %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script>
+    $(document).ready(function () {
+        {% block domready %}
+        {% endblock %}
     });
-  </script>
+</script>
 </body>
 </html>

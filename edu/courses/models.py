@@ -3,12 +3,12 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.template.loader import render_to_string
-from .fields import OrderField
+from .fields import OrderField, NonStrippingTextField
 
 
 class Subject(models.Model):
-    title = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, unique=True)
+    title = models.CharField(verbose_name="Название предмета", max_length=200)
+    slug = models.SlugField(verbose_name="Slug в строке", max_length=200, unique=True)
 
     class Meta:
         ordering = ['title']
@@ -24,14 +24,15 @@ class Course(models.Model):
     subject = models.ForeignKey(Subject,
                                 related_name='courses',
                                 on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, unique=True)
-    overview = models.TextField()
+    title = models.CharField(verbose_name="Название курса", max_length=200)
+    slug = models.SlugField(verbose_name="Slug в строке", max_length=200, unique=True)
+    overview = models.TextField(verbose_name="Краткое описание")
     created = models.DateTimeField(auto_now_add=True)
     students = models.ManyToManyField(User, related_name='courses_joined', blank=True)
 
     class Meta:
         ordering = ['-created']
+        verbose_name = "Курсы"
 
     def __str__(self):
         return self.title
@@ -41,8 +42,8 @@ class Module(models.Model):
     course = models.ForeignKey(Course,
                                related_name='modules',
                                on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
+    title = models.CharField(verbose_name="Название", max_length=200)
+    description = models.TextField(verbose_name="Краткое описание", blank=True)
     order = OrderField(blank=True, for_fields=['course'])
 
     class Meta:
@@ -60,7 +61,8 @@ class Content(models.Model):
                                    'text',
                                    'video',
                                    'image',
-                                   'file'
+                                   'file',
+                                   'code'
                                )})
     content_type = models.ForeignKey(ContentType,
                                      on_delete=models.CASCADE)
@@ -76,7 +78,7 @@ class ItemBase(models.Model):
     owner = models.ForeignKey(User,
                               related_name='%(class)s_related',
                               on_delete=models.CASCADE)
-    title = models.CharField(max_length=250)
+    title = models.CharField(verbose_name="Название", max_length=250, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -92,7 +94,7 @@ class ItemBase(models.Model):
 
 
 class Text(ItemBase):
-    content = models.TextField()
+    content = models.TextField(verbose_name="содержание")
 
 
 class File(ItemBase):
@@ -100,9 +102,16 @@ class File(ItemBase):
 
 
 class Image(ItemBase):
-    file = models.FileField(upload_to='images')
+    file = models.FileField(verbose_name="Файл", upload_to='images')
 
 
 class Video(ItemBase):
     url = models.URLField()
 
+
+class Code(ItemBase):
+    code = NonStrippingTextField()
+    input_data = NonStrippingTextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.title if self.title else "code without name"

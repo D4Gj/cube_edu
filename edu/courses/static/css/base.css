@@ -24,9 +24,10 @@ h1, h2, h3, h4, h5, h6 {
 h1 {
     background:#efefef;
     width:100%;
-    overflow:auto;
-    padding:20px 0 20px 40px;
+    overflow:hidden;
+    padding:20px 0 20px 0;
     margin:0;
+    text-indent: 25px;
 }
 
 .module {
@@ -46,6 +47,7 @@ h1 {
     margin:10px 0 20px;
     width:100%;
     float:left;
+    word-break: break-word;
 }
 
 #header {
@@ -255,7 +257,30 @@ ul#course-modules li:hover {
     color:#ccc;
     padding-left:20px;
 }
+.run_button{
+    background-color: #87b2fa;
+    border-color: white;
+}
 
+table {
+    width: 50%;
+    line-height: 1.42857;
+    font-family: Roboto;
+    border-bottom-color: grey;
+    border-bottom-width: 15px;
+}
 
+tr {
+    border-spacing: 12px;
+    padding-bottom: inherit;
+    border-bottom-color: grey;
+    border-collapse: separate;
+    border-spacing: 2px;
+}
+
+th {
+    padding: 8px;
+    background-color: #e4e4e470;
+}
 
 

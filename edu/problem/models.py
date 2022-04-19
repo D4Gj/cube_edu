@@ -1,66 +1,42 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.forms import JSONField
-from utils.models import RichTextField
-from utils.constants import Choices
+from courses.fields import NonStrippingTextField
+
 
 class Problem(models.Model):
-    # display ID
-    _id = models.TextField(db_index=True)
-    contest = models.ForeignKey(Contest, null=True, on_delete=models.CASCADE)
     # for contest problem
-    is_public = models.BooleanField(default=False)
-    title = models.TextField()
+    title = models.TextField(verbose_name="Название")
     # HTML
-    description = RichTextField()
-    input_description = RichTextField()
-    output_description = RichTextField()
-    # [{input: "test", output: "123"}, {input: "test123", output: "456"}]
-    samples = JSONField()
-    test_case_id = models.TextField()
-    # [{"input_name": "1.in", "output_name": "1.out", "score": 0}]
-    test_case_score = JSONField()
-    hint = RichTextField(null=True)
-    languages = JSONField()
-    template = JSONField()
-    create_time = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(verbose_name="Описание задачи")
+    input_description = models.TextField(verbose_name="Входные данные")
+    output_description = models.TextField(verbose_name="Выходные данные")
+    problem_tests_input = JSONField()
+    problem_tests_output = JSONField()
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name="Создано")
     # we can not use auto_now here
-    last_update_time = models.DateTimeField(null=True)
+    last_update_time = models.DateTimeField(auto_now_add=True, verbose_name="Обновлено")
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     # ms
-    time_limit = models.IntegerField()
+    time_limit = models.IntegerField(verbose_name="Ограничение по времени")
     # MB
-    memory_limit = models.IntegerField()
-    # io mode
-    # io_mode = JSONField(default=_default_io_mode)
-    # special judge related
-    spj = models.BooleanField(default=False)
-    spj_language = models.TextField(null=True)
-    spj_code = models.TextField(null=True)
-    spj_version = models.TextField(null=True)
-    spj_compile_ok = models.BooleanField(default=False)
-    rule_type = models.TextField()
-    visible = models.BooleanField(default=True)
-    difficulty = models.TextField()
-    # tags = models.ManyToManyField(ProblemTag)
-    source = models.TextField(null=True)
-    # for OI mode
-    total_score = models.IntegerField(default=0)
-    submission_number = models.BigIntegerField(default=0)
-    accepted_number = models.BigIntegerField(default=0)
-    # {JudgeStatus.ACCEPTED: 3, JudgeStaus.WRONG_ANSWER: 11}, the number means count
-    statistic_info = JSONField(default=dict)
-    share_submission = models.BooleanField(default=False)
+    memory_limit = models.IntegerField(verbose_name="Ограничение по памяти")
+    visible = models.BooleanField(verbose_name="Открыта для всех", default=True)
+
+    def __str__(self):
+        return self.title
+
+
+class Submission(models.Model):
+    user = models.ForeignKey(User, verbose_name="Автор", related_name="submissions", on_delete=models.CASCADE)
+    problem = models.ForeignKey(Problem, verbose_name="Задача", related_name="submissions", on_delete=models.CASCADE)
+    date = models.DateTimeField(verbose_name="Время попытки", auto_now_add=True)
+    code = NonStrippingTextField()
+    # 0 - Accepted; 1-Wrong answer; 2-Compilation error;3 - Time error; 4 - Memory error
+    result = models.IntegerField()
 
     class Meta:
-        db_table = "problem"
-        unique_together = (("_id", "contest"),)
-        ordering = ("create_time",)
+        ordering = ('-date',)
 
-    def add_submission_number(self):
-        self.submission_number = models.F("submission_number") + 1
-        self.save(update_fields=["submission_number"])
-
-    def add_ac_number(self):
-        self.accepted_number = models.F("accepted_number") + 1
-        self.save(update_fields=["accepted_number"])
+    def date_string(self):
+        return self.date.strftime('%d-%m-%Y %H:%M:%S')

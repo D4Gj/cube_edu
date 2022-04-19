@@ -32,7 +32,8 @@ class OrderField(models.PositiveIntegerField):
 
 class NonStrippingTextField(TextField):
     """A TextField that does not strip whitespace at the beginning/end of
-    it's value.  Might be important for markup/code."""
+    it's value.  Might be important for markup/code.
+    Usage in model of code"""
 
     def formfield(self, **kwargs):
         kwargs['strip'] = False
