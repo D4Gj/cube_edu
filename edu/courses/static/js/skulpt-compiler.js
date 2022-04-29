@@ -1,30 +1,38 @@
 const Range = ace.require("ace/range").Range;
-//123123
+
 $(document).ready(function () {
     //editor
     $(".editor").each(function (index) {
         const editor = ace.edit(this);
-        editor.setTheme("ace/theme/python");
+        editor.setTheme("ace/theme/Textmate");
         editor.session.setMode("ace/mode/python");
         editor.setFontSize("14px");
         editor.setOptions({
             enableBasicAutocompletion: true,
             enableSnippets: true,
-            enableLiveAutocompletion: true
+            enableLiveAutocompletion: true,
+            maxLines:15,
+            minLines:6
         });
-        //editor.session.setValue("#Enter your code here\nprint('hello world')"); //you can set value from xhr here
         $(this).data("aceObject", editor);
     });
     //input_area
     $(".input_data").each(function (index) {
-        const input = ace.edit(this);
+        const input = ace.edit(this,{
+            maxLines:10,
+            minLines:5
+        });
         input.session.setMode("ace/mode/plain_text");
+        input.setFontSize("14px");
         $(this).data("aceObject", input);
     });
 
     //console
     $(".output").each(function (index) {
-        const output = ace.edit(this);
+        const output = ace.edit(this,{
+            maxLines:10,
+            minLines:5
+        });
         output.session.setMode("ace/mode/plain_text");
         output.setFontSize("14px");
         //output.renderer.setShowGutter(false);

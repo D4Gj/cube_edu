@@ -16,16 +16,16 @@
 
 {% block content %}
     <!--skulpt-->
-<script src="{% static "js/Skulpt/skulpt.min.js" %}"></script>
-<script src="{% static "js/Skulpt/skulpt-stdlib.js" %}"></script>
-<script
-        src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"
-        integrity="sha512-GZ1RIgZaSc8rnco/8CXfRdCpDxRCphenIiZ2ztLy3XQfCbQUSCuk8IudvNHxkRA3oUg6q0qejgN/qqyG1duv5Q=="
-        crossorigin="anonymous"
-      ></script>
+    <script src="{% static "js/Skulpt/skulpt.min.js" %}"></script>
+    <script src="{% static "js/Skulpt/skulpt-stdlib.js" %}"></script>
+    <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"
+            integrity="sha512-GZ1RIgZaSc8rnco/8CXfRdCpDxRCphenIiZ2ztLy3XQfCbQUSCuk8IudvNHxkRA3oUg6q0qejgN/qqyG1duv5Q=="
+            crossorigin="anonymous"
+    ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ext-language_tools.min.js"
-        integrity="sha512-8qx1DL/2Wsrrij2TWX5UzvEaYOFVndR7BogdpOyF4ocMfnfkw28qt8ULkXD9Tef0bLvh3TpnSAljDC7uyniEuQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            integrity="sha512-8qx1DL/2Wsrrij2TWX5UzvEaYOFVndR7BogdpOyF4ocMfnfkw28qt8ULkXD9Tef0bLvh3TpnSAljDC7uyniEuQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <h1>
         {{ module.title }}
     </h1>
@@ -33,15 +33,15 @@
         <h3>Модули</h3>
         <ul id="modules">
             {% for m in object.modules.all %}
-                <li data-id="{{ m.id }}" {% if m == module %}class="selected"{% endif %}>
-                    <a href="{% url "student_course_detail_module" object.id m.id %}">
+                    <li data-id="{{ m.id }}" {% if m == module %}class="selected"{% endif %} {% if m.visible == True %}class="closed"{% endif %}>
+                        <a href="{% url "student_course_detail_module" object.id m.id %}">
             <span>
               Модуль <span class="order">{{ m.order|add:1 }}</span>
             </span>
-                        <br>
-                        {{ m.title }}
-                    </a>
-                </li>
+                            <br>
+                            {{ m.title }}
+                        </a>
+                    </li>
                 {% empty %}
                 <li>Модулей ещё нет.</li>
             {% endfor %}
@@ -54,7 +54,7 @@
         {% for content in module.contents.all %}
             {% with item=content.item %}
                 {% if item.title is not none %}
-                <h2>{{ item.title }}</h2>
+                    <h2>{{ item.title }}</h2>
                 {% endif %}
                 {{ item.render }}
             {% endwith %}

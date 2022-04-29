@@ -5,13 +5,15 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Список задач </h1>
-    <table>
-    {% for problem in problems %}
-        <tr>
-            <th><a href="{% url "detail_problem" problem.pk %}">{{ problem.title }}</a></th>
-            <th>???</th>
-        </tr>
-    {% endfor %}
+    <h1>Список задач {% ifequal user.groups.all.0.name 'Преподаватель' %}
+        |<a href="{% url 'create_problem' %}"> Создать задачу</a>
+    {% endifequal %}</h1>
+    <table class="problem_description">
+        {% for problem in problems %}
+            <tr class="tr-list">
+                <th class="th-list"><a href="{% url "detail_problem" problem.pk %}">{{ problem.title }}</a></th>
+                <th class="th-list">{{ problem.submissions.result }}</th>
+            </tr>
+        {% endfor %}
     </table>
 {% endblock %}

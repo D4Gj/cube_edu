@@ -5,15 +5,50 @@
 
 {% block content %}
     <h1>Создать задачу</h1>
-    <form method="post">
+    <form method="post" style=" position: absolute;
+    left: 1%;
+    ">
         {% csrf_token %}
         {{ form.as_p }}
-        <div class="tests" id='tests'>
+        <div class="tests" id='tests' style="display: inline-block">
             <label for="in1">Ввод 1</label><textarea name="in1" id="in1"></textarea>
-            <label for="out1">Ввод 1</label><textarea name="out1" id="out1"></textarea>
+            <label for="out1">Вывод 1</label><textarea name="out1" id="out1"></textarea>
         </div>
-        <p><input type="submit" value="Сохранить курс"></p>
+        <p><input type="button" value="Добавить тесты" onclick="add_inputs()"></p>
+        <p><input type="submit" value="Сохранить задачу"></p>
     </form>
+    <script>
+        let amount = 1;
+
+        function add_inputs() {
+            amount++;
+            let labelInput = document.createElement('Label');
+            labelInput.setAttribute('for', `in${amount}`);
+            labelInput.innerHTML = `Ввод ${amount}`;
+            let newInput = document.createElement("textarea");
+            newInput.id = `in${amount}`;
+            newInput.name = `in${amount}`;
+
+            let last_test = document.getElementById(`out${amount - 1}`);
+            insertAfter(last_test, labelInput);
+            insertAfter(labelInput, newInput);
+
+            let labelOutput = document.createElement('Label');
+            labelOutput.setAttribute('for', `out${amount}`);
+            labelOutput.innerHTML = `Вывод ${amount}`;
+            let newOutput = document.createElement("textarea");
+            newOutput.id = `out${amount}`;
+            newOutput.name = `out${amount}`;
+
+
+            insertAfter(newInput, labelOutput);
+            insertAfter(labelOutput, newOutput);
+        }
+
+        function insertAfter(referenceNode, newNode) {
+            referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+        }
+    </script>
 {% endblock %}
 
 {% block domready %}

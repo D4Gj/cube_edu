@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.template.loader import render_to_string
 from .fields import OrderField, NonStrippingTextField
+from ckeditor.fields import RichTextField
 
 
 class Subject(models.Model):
@@ -45,6 +46,8 @@ class Module(models.Model):
     title = models.CharField(verbose_name="Название", max_length=200)
     description = models.TextField(verbose_name="Краткое описание", blank=True)
     order = OrderField(blank=True, for_fields=['course'])
+    visible = models.BooleanField("Видимость контента", blank=False, null=False, default=False)
+
 
     class Meta:
         ordering = ['order']
@@ -69,6 +72,7 @@ class Content(models.Model):
     object_id = models.PositiveIntegerField()
     item = GenericForeignKey('content_type', 'object_id')
     order = OrderField(blank=True, for_fields=['module'])
+    visible = models.BooleanField("Видимость контента", blank=False, null=False, default=False)
 
     class Meta:
         ordering = ['order']
@@ -94,11 +98,14 @@ class ItemBase(models.Model):
 
 
 class Text(ItemBase):
-    content = models.TextField(verbose_name="содержание")
+    content = RichTextField(verbose_name="Контент")
+
+    def __str__(self):
+        return "WYSIWYG"
 
 
 class File(ItemBase):
-    file = models.FileField(upload_to='files')
+    file = models.FileField(upload_to='files', verbose_name="Файл")
 
 
 class Image(ItemBase):

@@ -1,1 +1,4 @@
-<p text-align="justify">{{ item.content|linebreaks }}</p>
+<p text-align="justify">
+    {{ form.media }}
+    {{ item.content | safe }}
+</p>

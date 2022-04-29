@@ -1,7 +1,162 @@
 {% extends "base.html" %}
+{% load static %}
+{% block title %}
+    {{ problem.title }}
+{% endblock %}
 
 {% block content %}
-    {{ problem.title }}
-    {{ problem.input_description }}
-    {{ problem.output_description }}
+    <h1>{{ problem.title }}</h1>
+    <h6>Ограничения:{{ problem.memory_limit }}килобайт {{ problem.time_limit }}</h6>
+    <div class="problem_description">
+        <h2 class="bold">Описание задачи:</h2>
+        {{ problem.description | linebreaks }}
+        <h2 class="bold">Входные данные:</h2>
+        {{ problem.description_input | linebreaks }}
+        <h2 class="bold">Выходные данные:</h2>
+        {{ problem.description_output | linebreaks }}
+        <h2 class="bold">Примеры</h2>
+
+        {% for key,value in samples.items %}
+            <div class="sample_data_block">
+                <h3 class="sample_data">Входные данные:</h3>
+                <div class="sample" id="test">{{ value.0 }}</div>
+                <h3 class="sample_data">Выходные данные:</h3>
+                <div class="sample" id="test">{{ value.1 }}</div>
+            </div>
+            <br>
+        {% endfor %}
+
+        <table class="grid">
+            <tr>
+                <td>
+                    <button
+                            type="button"
+                            class="run_button"
+                            onclick="runit($('.editor')[0], $('.output')[0])"
+                    >
+                        запустить
+                    </button>
+                    <button
+                            type="button"
+                            class="stop-button"
+                            onclick="stopit()"
+                            style="display: none;"
+                    >
+                        Stop code
+                    </button>
+                </td>
+            </tr>
+            <!--editor container: setting width to is important-->
+            <tr>
+                <td colspan="2">
+                    <div>
+                        <div class="editor" id="code_editor1"></div>
+                    </div>
+                </td>
+            </tr>
+            <!--output container: setting width to is important-->
+            <tr>
+                <td>
+                    <div style="width: 90%">
+                        <div class="label-input">Входные данные:</div>
+                        <div class="input_data" id="__v01d_input_area1"></div>
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        <div class="label-output">Выходные данные:</div>
+                        <div class="output"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    {% if request.user.is_authenticated %}
+                        <form method="post" id="post-form" style="float: right">
+                            {% csrf_token %}
+                            <button type="submit" value="Отправить решение" id="button_send_code">Отправить решение
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}">Вам нужно авторизоваться</a>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+        <table class="problem_description" id="submissions">
+            {% for submission in submissions %}
+                <tr class="tr-list">
+                    <td class="th-list">
+                        {{ submission.date }}
+                    </td>
+                <td class="th-list">
+                        {{ submission.code }}
+                    </td>
+                    <td class="th-list">
+                        {% ifequal submission.result -1 %}
+                            Проверяется
+                        {% endifequal %}
+                        {% ifequal submission.result 0 %}
+                            Принято
+                        {% endifequal %}
+                        {% ifequal submission.result 1 %}
+                        {{ submission.description }}
+                        {% endifequal %}
+                        {% ifequal submission.result 2 %}
+                        {{ submission.description }}
+                        {% endifequal %}
+                    </td>
+                </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+
+    <!--ace-->
+    <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"
+            integrity="sha512-GZ1RIgZaSc8rnco/8CXfRdCpDxRCphenIiZ2ztLy3XQfCbQUSCuk8IudvNHxkRA3oUg6q0qejgN/qqyG1duv5Q=="
+            crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ext-language_tools.min.js"
+            integrity="sha512-8qx1DL/2Wsrrij2TWX5UzvEaYOFVndR7BogdpOyF4ocMfnfkw28qt8ULkXD9Tef0bLvh3TpnSAljDC7uyniEuQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{% static "js/Skulpt/skulpt.min.js" %}"></script>
+    <script src="{% static "js/Skulpt/skulpt-stdlib.js" %}"></script>
+    <script src="{% static "js/skulpt-compiler.js" %}"></script>
+    <script>
+        var sample;
+        $('.sample').each(function (index) {
+            sample = ace.edit(this);
+            sample.session.setUseWorker(false);
+            sample.setShowPrintMargin(false);
+            sample.setReadOnly(true);
+        });
+
+        var code = ace.edit('code_editor1');
+        $(document).on('submit', '#post-form', function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: '{% url "detail_problem" problem.pk %}',
+                data: {
+                    code: code.getValue(),
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                    action: 'post'
+                },
+                success: function () {
+                    $("#submissions").load(location.href + " #submissions");
+                    document.getElementById("post-form").reset();
+                    console.log("Код отправлен на проверку");
+                },
+                error: function (xhr, errmsg, err) {
+                    console.log("Произошла ошибка при отправке кода")
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block domready %}
+
 {% endblock %}
