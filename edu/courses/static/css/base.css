@@ -105,6 +105,10 @@ h1 {
     background: #3f3f3f;
 }
 
+.contents ul li.closed {
+    background: rgba(45, 45, 56, 0.4);
+}
+
 .contents ul li:hover {
     background: #3f3f3f;
 }
@@ -331,8 +335,8 @@ h3.sample_data {
     border: none;
     border-collapse: separate;
     border-spacing: 5px;
-    margin-left:auto;
-    margin-right:auto;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .grid td {
@@ -351,4 +355,19 @@ h3.sample_data {
 .label-output {
     float: none;
     padding-top: 1em;
+}
+
+.accepted {
+    color: green;
+}
+
+.wrong {
+    color: red;
+}
+
+.center {
+    margin: auto;
+    width: 60%;
+    padding: 10px;
+    text-align: center;
 }

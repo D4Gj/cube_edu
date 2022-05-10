@@ -101,15 +101,15 @@ h1 {
     cursor:move;
 }
 
-.contents ul li.selected {
-    background:#3f3f3f;
-}
-.contents ul li.closed {
-    background: #171616;
+.contents ul li .selected {
+    background:#Ff3f3f;
 }
 
 .contents ul li:hover {
     background:#3f3f3f;
+}
+.contents li .closed {
+    background: #ff0000;
 }
 
 .contents ul span {

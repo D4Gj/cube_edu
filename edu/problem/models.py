@@ -24,6 +24,10 @@ class Problem(models.Model):
     memory_limit = models.IntegerField(verbose_name="Ограничение по памяти")
     visible = models.BooleanField(verbose_name="Открыта для всех", default=True)
 
+    class Meta:
+        verbose_name = 'Задачи'
+        verbose_name_plural = 'Задачи'
+
     def __str__(self):
         return self.title
 
@@ -32,8 +36,9 @@ class Problem(models.Model):
 
 
 class Submission(models.Model):
-    user = models.ForeignKey(User, verbose_name="Автор", related_name="submissions", on_delete=models.CASCADE)
-    problem = models.ForeignKey(Problem, verbose_name="Задача", related_name="submissions", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name="Автор", on_delete=models.CASCADE)
+    problem = models.ForeignKey(Problem, verbose_name="Задача", on_delete=models.CASCADE,
+                                null=False, blank=False)
     date = models.DateTimeField(verbose_name="Время попытки", auto_now_add=True)
     code = NonStrippingTextField()
     # -1 - Checking; 0 - Accepted; 1-Wrong answer; 2-Compilation error;3 - Time error; 4 - Memory error
@@ -42,6 +47,11 @@ class Submission(models.Model):
 
     class Meta:
         ordering = ('-date',)
+        verbose_name = "Попытки решения"
+        verbose_name_plural = "Попытки решения"
+
+    def __str__(self):
+        return f"{self.user} {self.code} {self.result}"
 
     def date_string(self):
         return self.date.strftime('%d-%m-%Y %H:%M:%S')

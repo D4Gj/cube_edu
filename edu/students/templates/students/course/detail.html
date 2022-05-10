@@ -33,7 +33,8 @@
         <h3>Модули</h3>
         <ul id="modules">
             {% for m in object.modules.all %}
-                    <li data-id="{{ m.id }}" {% if m == module %}class="selected"{% endif %} {% if m.visible == True %}class="closed"{% endif %}>
+            {% if m.visible == True %}
+                    <li data-id="{{ m.id }}" {% if m == module %}class="selected"{% endif %}>
                         <a href="{% url "student_course_detail_module" object.id m.id %}">
             <span>
               Модуль <span class="order">{{ m.order|add:1 }}</span>
@@ -42,6 +43,7 @@
                             {{ m.title }}
                         </a>
                     </li>
+                {% endif %}
                 {% empty %}
                 <li>Модулей ещё нет.</li>
             {% endfor %}
@@ -57,6 +59,9 @@
                     <h2>{{ item.title }}</h2>
                 {% endif %}
                 {{ item.render }}
+                {% if item.problem_solve %}
+                <h3>Для закрепления нужно решить задачу <a class="solved" href="{% url 'detail_problem' item.problem_solve.pk %}">{{ item.problem_solve.title }}</a></h3>
+                {% endif %}
             {% endwith %}
         {% endfor %}
     </div>

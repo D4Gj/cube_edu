@@ -11,9 +11,31 @@
     <table class="problem_description">
         {% for problem in problems %}
             <tr class="tr-list">
-                <th class="th-list"><a href="{% url "detail_problem" problem.pk %}">{{ problem.title }}</a></th>
-                <th class="th-list">{{ problem.submissions.result }}</th>
+                <th class="th-list"><a href="{% url "detail_problem" problem.pk %}">{{ problem }}</a></th>
+                <th class="th-list">{% if problem.solved != 0 %}
+                    <div class="accepted">Accepted</div>
+                {% else %}
+                    <div class="wrong">Not accepted</div>
+                {% endif %}
+                </th>
             </tr>
         {% endfor %}
     </table>
+    <div class="center">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; Первая страница</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Предыдущая страница</a>
+        {% endif %}
+
+        <span class="current">
+            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Следующая страница</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Последняя страница &raquo;</a>
+        {% endif %}
+    </span>
+    </div>
 {% endblock %}

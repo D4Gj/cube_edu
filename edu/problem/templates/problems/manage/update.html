@@ -6,5 +6,57 @@
 {% endblock %}
 
 {% block content %}
+    <h1>Создать задачу</h1>
+    <form method="post" style=" position: absolute;
+    left: 1%;
+    ">
+        {% csrf_token %}
+        {{ form.as_p }}
 
+            <div class="tests" id='tests' style="display: inline-block">
+                {% for test in tests %}
+                <label for="in{{ forloop.counter }}">Ввод {{ forloop.counter }}</label><textarea
+                    name="in{{ forloop.counter }}"
+                    id="in{{ loop.index }}">{{ test.0 }}</textarea>
+                <label for="out{{ forloop.counter }}">Вывод {{ forloop.counter }}</label><textarea
+                    name="out{{ forloop.counter }}" id="out{{ forloop.counter }}">{{ test.1 }}</textarea>
+            {% endfor %}
+            </div>
+
+        <p><input type="button" value="Добавить тесты" onclick="add_inputs()"></p>
+        <p><input type="submit" value="Сохранить задачу"></p>
+    </form>
+
+    <script>
+        let amount = {{ tests|length }};
+
+        function add_inputs() {
+            amount++;
+            let labelInput = document.createElement('Label');
+            labelInput.setAttribute('for', `in${amount}`);
+            labelInput.innerHTML = `Ввод ${amount}`;
+            let newInput = document.createElement("textarea");
+            newInput.id = `in${amount}`;
+            newInput.name = `in${amount}`;
+
+            let last_test = document.getElementById(`out${amount - 1}`);
+            insertAfter(last_test, labelInput);
+            insertAfter(labelInput, newInput);
+
+            let labelOutput = document.createElement('Label');
+            labelOutput.setAttribute('for', `out${amount}`);
+            labelOutput.innerHTML = `Вывод ${amount}`;
+            let newOutput = document.createElement("textarea");
+            newOutput.id = `out${amount}`;
+            newOutput.name = `out${amount}`;
+
+
+            insertAfter(newInput, labelOutput);
+            insertAfter(labelOutput, newOutput);
+        }
+
+        function insertAfter(referenceNode, newNode) {
+            referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+        }
+    </script>
 {% endblock %}

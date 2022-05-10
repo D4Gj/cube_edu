@@ -13,8 +13,14 @@ def check_submission(code, submission, problem):
              input_test.values()]
     }
     jdata = json.dumps(data)
-    response = requests.request("POST", "http://localhost:42920/run", data=jdata,
-                                headers={"Accept": "application/json", 'Content-Type': 'application/json'})
+    try:
+        response = requests.request("POST", "http://localhost:42920/run", data=jdata,
+                                    headers={"Accept": "application/json", 'Content-Type': 'application/json'})
+    except requests.exceptions.RequestException as e:
+        submission.result = 3
+        submission.description = "Проверяющий сервер не найден, обратитесь к администратору!"
+        submission.save()
+        return 1
     camisole_data = response.json()
     print(camisole_data)
     right_answers = list(json.loads(problem.problem_tests_output).values())
@@ -36,6 +42,6 @@ def check_submission(code, submission, problem):
                 return 2
 
     submission.result = 0
-    submission.description = 'OK'
+    submission.description = 'Accepted'
     submission.save()
     return 0
