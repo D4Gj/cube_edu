@@ -8,7 +8,8 @@
 <h1>Задача:{{ problem.title }} Ограничения:{{ problem.memory_limit }}килобайт {{ problem.time_limit }}мс
     {% ifequal user.groups.all.0.name 'Преподаватель' %}
         <a href="{% url 'update_problem' problem.pk %}">Изменить</a>
-        <a href="{% url 'delete_problem' problem.pk %}">Удалить</a> {% endifequal %}</h1>
+        <a href="{% url 'delete_problem' problem.pk %}">Удалить</a> {% endifequal %}
+</h1>
 <div class="problem_description">
     <h2 class="bold">Описание задачи:</h2>
     {{ problem.description | linebreaks }}
@@ -85,21 +86,26 @@
             </td>
         </tr>
     </table>
-    <table class="problem_description" id="submissions">
+    <table id="submissions">
+        <tr class="tr-list" style="color: #0077ff; text-align: center">
+            <td class="th-list">Дата</td>
+            <td class="th-list">Код попытки</td>
+            <td class="th-list">Результат попытки</td>
+        </tr>
         {% for submission in submissions %}
         <tr class="tr-list">
-            <td class="th-list">
+            <td class="th-list" style="width: 15%">
                 {{ submission.date }}
             </td>
+            <td class="th-list" style="width: 65%;" id="table_code{{ forloop.counter }}">{{ submission.code }}</td>
             <td class="th-list">
-                {{ submission.code }}
-            </td>
-            <td class="th-list">
-                {% ifequal submission.result 0 %}
+                {% if submission.result == 0 %}
                 <div class="accepted">{{ submission.description }}</div>
+                {% elif submission.result == -1 %}
+                <div class="wrong" id="submission_{{ forloop.counter }}">{{ submission.description }}</div>
                 {% else %}
                 <div class="wrong">{{ submission.description }}</div>
-                {% endifequal %}
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -126,6 +132,14 @@
         sample.setShowPrintMargin(false);
         sample.setReadOnly(true);
     });
+    var submission_code;
+    $('[id^=table_code]').each(function (index) {
+        submission_code = ace.edit(this);
+        submission_code.setOptions({
+            maxLines: 10
+        })
+        submission_code.setReadOnly(true);
+    })
 
     var code = ace.edit('code_editor1');
     $(document).on('submit', '#post-form', function (e) {
@@ -140,6 +154,8 @@
             },
             success: function () {
                 $("#submissions").load(location.href + " #submissions");
+                setTimeout(reload,100);
+                setTimeout(get_submissions,3000)
                 document.getElementById("post-form").reset();
                 console.log("Код отправлен на проверку");
             },
@@ -148,6 +164,25 @@
             }
         });
     });
+    function reload() {
+        $('[id^=table_code]').each(function (index) {
+        submission_code = ace.edit(this);
+        submission_code.setOptions({
+            maxLines: 10
+        })
+        submission_code.setReadOnly(true);
+    });
+    }
+    function get_submissions() {
+        var results = $('[id^=submission_]');
+        if (results.length !== 0){
+            $("#submissions").load(location.href + " #submissions");
+            setTimeout(get_submissions,3000)
+        }
+        setTimeout(reload,100);
+        console.log(results)
+    }
+
 </script>
 {% endblock %}
 

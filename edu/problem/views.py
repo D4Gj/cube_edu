@@ -10,9 +10,13 @@ from .models import Problem, Submission
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.utils.decorators import classonlymethod
+from asgiref.sync import async_to_sync, sync_to_async
 from .utils import check_submission
 from django.db.models import Q
 from django.db.models import Count
+import asyncio
+import threading
 import json
 
 
@@ -95,8 +99,11 @@ class DetailProblemView(DetailView):
                 result=-1
             )
             submission.save()
-            check_submission(code, submission, problem)
-            return HttpResponse('checking')
+            t = threading.Thread(target=check_submission, args=[code, submission, problem])
+            t.setDaemon(True)
+            t.start()
+
+            return HttpResponse('Checking')
         else:
             return HttpResponse('error')
 

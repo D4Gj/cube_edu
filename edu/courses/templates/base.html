@@ -19,7 +19,8 @@
                 {% endifequal %}
                 <a href="{% url "logout" %}">Выйти</a></li>
         {% else %}
-            <li><a href="{% url "student_registration" %}">Регистрация</a> <a href="{% url "login" %}">Войти</a></li>
+            <li><a href="{% url "list_problems" %}">Список
+                задач</a> <a href="{% url "student_registration" %}">Регистрация</a> <a href="{% url "login" %}">Войти</a></li>
         {% endif %}
     </ul>
 

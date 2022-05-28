@@ -1,6 +1,14 @@
-from .models import Problem, Submission
+from django.apps import apps
 import requests
 import json
+
+from django.http import HttpResponse
+
+from edu import settings
+from asgiref.sync import async_to_sync
+from django.shortcuts import render, redirect
+
+from .models import Submission
 
 
 def check_submission(code, submission, problem):
@@ -22,7 +30,8 @@ def check_submission(code, submission, problem):
         submission.save()
         return 1
     camisole_data = response.json()
-    print(camisole_data)
+    if settings.DEBUG:
+        print(camisole_data)
     right_answers = list(json.loads(problem.problem_tests_output).values())
     if camisole_data['success']:
         check_tests = camisole_data['tests']
